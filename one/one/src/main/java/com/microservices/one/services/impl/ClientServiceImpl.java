@@ -1,18 +1,18 @@
 package com.microservices.one.services.impl;
 
-import com.microservices.one.exception.ClientNotFoundException;
-import com.microservices.one.exception.ClientResponsehandler;
+import com.microservices.one.exception.BadRequestException;
 import com.microservices.one.models.dto.ClientDto;
 import com.microservices.one.models.entities.ClientEntity;
-import com.microservices.one.repositories.dao.ClientDao;
+import com.microservices.one.repositories.Dao.ClientDao;
 import com.microservices.one.services.ClientService;
 import com.microservices.one.utils.Constants;
 import com.microservices.one.utils.MapperObjects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,50 +37,50 @@ public class ClientServiceImpl implements ClientService {
         return clientDtoList;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<ClientDto> findById(Long id) {
-
-        Optional<ClientEntity> clientEntity = clientRepository.findById(id);
-
-        if(clientEntity.isPresent()) {
-            return (List<ClientDto>) ClientResponsehandler.generateResponse("Cliente Encontrado", HttpStatus.OK, Optional.ofNullable(clientEntity));
-        }else {
-            throw new ClientNotFoundException("Cliente no existente en base de datos !");
-        }
+    public ClientDto findById(Long id) {
+        return MapperObjects.clientEntityToClientDto(clientRepository.findById(id).orElse(null));
     }
 
+
     @Override
-    public ResponseEntity<Object> getNumberDocument(String numberDocument) {
+    public ClientDto getNumberDocument(String numberDocument) {
         Optional<ClientEntity> clientEntity = clientRepository.findByNumberDocument(numberDocument);
         ClientDto clientDto = null;
-        if(clientEntity.isPresent() && clientEntity.equals(Constants.DOCUMENT)){
-            return ClientResponsehandler.generateResponse("Número de documento del cliente encontrado en base ", HttpStatus.OK, clientEntity);
-           // return null;
-        } else {
-            throw new ClientNotFoundException("Número no encontrado en base de datos! ");
-        }
+        if (clientEntity.isPresent() && clientEntity.equals(Constants.DOCUMENT))
+            clientDto = MapperObjects.clientEntityToClientDto(clientEntity.get());
+           return clientDto;
 
     }
 
+
     @Override
-    public ResponseEntity<Object> addClient(ClientDto client) {
-    Optional<ClientEntity> clientEntity = clientRepository.findByNumberDocument(client.getNumberDocument());
+    public ClientDto addClient(ClientDto clientDto) {
+        ClientEntity client = ClientEntity.builder()
+                .documentType(clientDto.getDocumentType())
+                .numberDocument(clientDto.getNumberDocument())
+                .firstName(clientDto.getFirstName())
+                .secondName(clientDto.getSecondName())
+                .secondFirstName(clientDto.getSecondFirstName())
+                .secondLastName(clientDto.getSecondLastName())
+                .numberPhone(clientDto.getNumberPhone())
+                .movil(clientDto.getMovil())
+                .address(clientDto.getAddress())
+                .email(clientDto.getEmail())
+                .city(clientDto.getCity())
+                .status(clientDto.getStatus())
+                .build();
 
-        if(!clientEntity.isPresent()) {
-            clientRepository.save(MapperObjects.clientDtoToproductEntity(client));
-            return ClientResponsehandler.generateResponse("Número de documento del cliente creado con éxito ", HttpStatus.OK, clientEntity);
-        } else {
-            throw  new ClientNotFoundException("Número no se creó en base de datos");
-        }
-
-
+        return MapperObjects.clientEntityToClientDto(clientRepository.save(client));
     }
 
+
     @Override
-    public ResponseEntity<Object> updateProduct(Long id, ClientDto clientDto) {
+    public ClientDto updateProduct(Long id, ClientDto clientDto)  throws Exception {
         Optional<ClientEntity> clientEntity = clientRepository.findById(id);
 
-        if(clientEntity.isPresent()){
+        if (clientEntity.isPresent()) {
             clientEntity.get().setFirstName(clientDto.getFirstName());
             clientEntity.get().setSecondName(clientDto.getSecondName());
             clientEntity.get().setSecondFirstName(clientDto.getSecondFirstName());
@@ -94,24 +94,35 @@ public class ClientServiceImpl implements ClientService {
             clientEntity.get().setCity(clientDto.getCity());
             clientEntity.get().setStatus(clientDto.getStatus());
             clientRepository.save(clientEntity.get());
-            return ClientResponsehandler.generateResponse("cliente actualizado con éxito en base", HttpStatus.OK, clientEntity);
+
+            return MapperObjects.clientEntityToClientDto(MapperObjects.clientDtoToproductEntity(clientDto));
 
         } else {
-            throw  new ClientNotFoundException("Número no se creó en base de datos");
+            throw new Exception("El producto no existe");
+
         }
     }
 
-    @Override
-    public void  removeClient(Long id) {
-        Optional<ClientEntity> clientEntity = clientRepository.findById(id);
 
-        if (clientEntity.isPresent()) {
-            clientEntity.get().setStatus(0);
-            clientRepository.save(clientEntity.get());
-            ClientResponsehandler.generateResponse("cliente eliminado con éxito", HttpStatus.OK, clientEntity);
-        } else {
-            throw new ClientNotFoundException("él cliente no existe en base de datos");
+
+        @Override
+        public void removeClient(Long id) throws Exception{
+            Optional<ClientEntity> clientEntity = clientRepository.findById(id);
+
+            if (clientEntity.isPresent()) {
+                clientEntity.get().setStatus(0);
+                clientRepository.save(clientEntity.get());
+                ClientResponsehandler.generateResponse("cliente eliminado con éxito", HttpStatus.OK, clientEntity);
+            } else {
+                throw new BadRequestException("él cliente no existe en base de datos");
+            }
         }
+
     }
 
-}
+
+
+
+
+
+

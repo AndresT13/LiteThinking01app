@@ -10,6 +10,7 @@ public interface MapperObjects {
 
     public static ClientDto clientEntityToClientDto(ClientEntity clientEntity) {
         return ClientDto.builder()
+                .id(clientEntity.getId())
                 .firstName(clientEntity.getFirstName())
                 .secondName(clientEntity.getSecondName())
                 .secondFirstName(clientEntity.getSecondFirstName())
@@ -28,6 +29,7 @@ public interface MapperObjects {
 
     public static ClientEntity clientDtoToproductEntity(ClientDto clientDto) {
         return ClientEntity.builder()
+                .id(clientDto.getId())
                 .firstName(clientDto.getFirstName())
                 .secondName(clientDto.getSecondName())
                 .secondFirstName(clientDto.getSecondFirstName())
