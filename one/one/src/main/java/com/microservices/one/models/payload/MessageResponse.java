@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Builder
 public class MessageResponse  implements Serializable {
 
-    private String mnesaje;
+    private String message;
     private Object object;
 
 }

@@ -102,9 +102,6 @@ public class ClientServiceImpl implements ClientService {
 
         }
     }
-
-
-
         @Override
         public void removeClient(Long id) throws Exception{
             Optional<ClientEntity> clientEntity = clientRepository.findById(id);
@@ -112,13 +109,17 @@ public class ClientServiceImpl implements ClientService {
             if (clientEntity.isPresent()) {
                 clientEntity.get().setStatus(0);
                 clientRepository.save(clientEntity.get());
-                ClientResponsehandler.generateResponse("cliente eliminado con éxito", HttpStatus.OK, clientEntity);
             } else {
                 throw new BadRequestException("él cliente no existe en base de datos");
             }
         }
 
+    @Override
+    public boolean existsById(Long id) {
+        return clientRepository.existsById(id);
     }
+
+}
 
 
 

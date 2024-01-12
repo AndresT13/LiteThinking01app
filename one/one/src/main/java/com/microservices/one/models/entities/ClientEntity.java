@@ -20,8 +20,6 @@ public class ClientEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
-
-
     @Column(name = "FIRST_NAME", nullable = false)
     private String firstName;
     @Column(name = "SECOND_FIRST_NAME")

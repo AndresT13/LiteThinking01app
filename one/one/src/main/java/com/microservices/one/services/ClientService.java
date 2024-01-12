@@ -15,4 +15,6 @@ public interface ClientService extends MapperObjects {
     ClientDto addClient(ClientDto clientDto);
     ClientDto updateProduct(Long id, ClientDto clientDto)  throws Exception;
     void removeClient(Long id) throws Exception;
+
+    boolean existsById(Long id);
 }

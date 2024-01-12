@@ -2,5 +2,5 @@ package com.microservices.one.utils;
 
 public class Constants {
 
-    public static final Integer DOCUMENT = 12345678;
+    public static final String DOCUMENT = "12345678";
 }

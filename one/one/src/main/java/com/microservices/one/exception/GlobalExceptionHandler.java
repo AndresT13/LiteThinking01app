@@ -15,13 +15,6 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({BadRequestException.class})
-    public ResponseEntity<Object> handleClientNotFoundException(BadRequestException exception) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(exception.getMessage());
-    }
-
 
     //controla los errores de los campos
     @ExceptionHandler(MethodArgumentNotValidException.class)
