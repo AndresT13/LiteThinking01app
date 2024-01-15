@@ -2,7 +2,10 @@ package com.microservices.one.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -28,26 +31,25 @@ public class ClientEntity {
     private String secondName;
     @Column(name = "SECOND_LAST_NAME")
     private String secondLastName;
-    @Column(name = "DOCUMENT_TYPE", nullable = false, length = 3)
+    @Pattern(regexp = "[CC|PP]", message = "Tipo de documento se deberá reemplazar por  CC : Cedula o PP : passaporte pues solo permite este tipo de carácteres para este dato en base de datos.")
+    @Column(name = "DOCUMENT_TYPE", nullable = false, unique = true)
     private String documentType;
-    @Column(name = "NUMBER_DOCUMENT", nullable = false, length = 3)
+    @Column(name = "NUMBER_DOCUMENT", length = 12)
     private String numberDocument;
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "BIRTH")
     private Date birth;
-
     @Column(name = "NUMBER_PHONE", length = 10)
     private Integer numberPhone;
-    @Column(name = "MOVIL", length = 12)
+    @Column(name = "MOVIL", length = 10)
     private Integer movil;
-
-    @Column(name = "EMAIL", length = 120)
+    @Email
+    @Column(name = "EMAIL")
     private String email;
-    @Column(name = "ADDRESS", length = 150)
+    @Column(name = "ADDRESS")
     private String address;
-    @Column(name = "CITY", length = 150)
+    @Column(name = "CITY")
     private String city;
     @Column(name = "STATUS")
     private Integer status;

@@ -4,8 +4,6 @@ package com.microservices.one.utils;
 import com.microservices.one.models.entities.ClientEntity;
 import com.microservices.one.models.dto.ClientDto;
 
-import java.util.Optional;
-
 public interface MapperObjects {
 
     public static ClientDto clientEntityToClientDto(ClientEntity clientEntity) {
@@ -27,9 +25,8 @@ public interface MapperObjects {
 
 
 
-    public static ClientEntity clientDtoToproductEntity(ClientDto clientDto) {
+    public static ClientEntity clientDtoToClientEntity(ClientDto clientDto) {
         return ClientEntity.builder()
-                .id(clientDto.getId())
                 .firstName(clientDto.getFirstName())
                 .secondName(clientDto.getSecondName())
                 .secondFirstName(clientDto.getSecondFirstName())
@@ -44,4 +41,5 @@ public interface MapperObjects {
                 .build();
 
     }
+
 }

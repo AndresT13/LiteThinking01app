@@ -1,6 +1,7 @@
 package com.microservices.one.services;
 
 import com.microservices.one.models.dto.ClientDto;
+import com.microservices.one.models.entities.ClientEntity;
 import com.microservices.one.utils.MapperObjects;
 import org.springframework.http.ResponseEntity;
 
@@ -13,7 +14,7 @@ public interface ClientService extends MapperObjects {
     ClientDto findById(Long id);
     ClientDto getNumberDocument(String numberDocument);
     ClientDto addClient(ClientDto clientDto);
-    ClientDto updateProduct(Long id, ClientDto clientDto)  throws Exception;
+    //ClientDto updateProduct(Long id, ClientDto clientDto)  throws Exception;
     void removeClient(Long id) throws Exception;
 
     boolean existsById(Long id);

@@ -11,11 +11,13 @@ import com.microservices.one.utils.MapperObjects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -37,48 +39,52 @@ public class ClientServiceImpl implements ClientService {
         return clientDtoList;
     }
 
+
     @Transactional(readOnly = true)
     @Override
     public ClientDto findById(Long id) {
-        return MapperObjects.clientEntityToClientDto(clientRepository.findById(id).orElse(null));
+
+        Optional<ClientEntity> entity = clientRepository.findById(id);
+        ClientDto clientDto = null;
+
+        if (entity.isPresent())
+           clientDto = MapperObjects.clientEntityToClientDto(entity.get());
+
+        return clientDto;
     }
 
 
+    @Transactional(readOnly = true)
     @Override
     public ClientDto getNumberDocument(String numberDocument) {
+
+
         Optional<ClientEntity> clientEntity = clientRepository.findByNumberDocument(numberDocument);
         ClientDto clientDto = null;
-        if (clientEntity.isPresent() && clientEntity.equals(Constants.DOCUMENT))
+
+        if (clientEntity.isPresent())
             clientDto = MapperObjects.clientEntityToClientDto(clientEntity.get());
-           return clientDto;
+        return clientDto;
 
     }
 
 
     @Override
     public ClientDto addClient(ClientDto clientDto) {
-        ClientEntity client = ClientEntity.builder()
-                .documentType(clientDto.getDocumentType())
-                .numberDocument(clientDto.getNumberDocument())
-                .firstName(clientDto.getFirstName())
-                .secondName(clientDto.getSecondName())
-                .secondFirstName(clientDto.getSecondFirstName())
-                .secondLastName(clientDto.getSecondLastName())
-                .numberPhone(clientDto.getNumberPhone())
-                .movil(clientDto.getMovil())
-                .address(clientDto.getAddress())
-                .email(clientDto.getEmail())
-                .city(clientDto.getCity())
-                .status(clientDto.getStatus())
-                .build();
+        Optional<ClientEntity> entity = clientRepository.findById(clientDto.getId());
+        ClientEntity client = null;
+        if (!entity.isPresent()) {
+            client = clientRepository.save(MapperObjects.clientDtoToClientEntity(clientDto));
+        }
 
-        return MapperObjects.clientEntityToClientDto(clientRepository.save(client));
+        return MapperObjects.clientEntityToClientDto(client);
     }
 
-
-    @Override
+   /* @Override
     public ClientDto updateProduct(Long id, ClientDto clientDto)  throws Exception {
         Optional<ClientEntity> clientEntity = clientRepository.findById(id);
+
+
 
         if (clientEntity.isPresent()) {
             clientEntity.get().setFirstName(clientDto.getFirstName());
@@ -86,7 +92,7 @@ public class ClientServiceImpl implements ClientService {
             clientEntity.get().setSecondFirstName(clientDto.getSecondFirstName());
             clientEntity.get().setSecondLastName(clientDto.getSecondLastName());
             clientEntity.get().setDocumentType(clientDto.getDocumentType());
-            clientEntity.get().setNumberDocument(Constants.DOCUMENT.toString());
+            clientEntity.get().setNumberDocument(clientDto.getNumberDocument());
             clientEntity.get().setNumberPhone(clientDto.getNumberPhone());
             clientEntity.get().setMovil(clientDto.getMovil());
             clientEntity.get().setEmail(clientDto.getEmail());
@@ -95,13 +101,13 @@ public class ClientServiceImpl implements ClientService {
             clientEntity.get().setStatus(clientDto.getStatus());
             clientRepository.save(clientEntity.get());
 
-            return MapperObjects.clientEntityToClientDto(MapperObjects.clientDtoToproductEntity(clientDto));
+            return MapperObjects.clientEntityToClientDto(MapperObjects.clientDtoToClientEntity(clientDto));
 
         } else {
             throw new Exception("El producto no existe");
 
         }
-    }
+    }*/
         @Override
         public void removeClient(Long id) throws Exception{
             Optional<ClientEntity> clientEntity = clientRepository.findById(id);

@@ -1,15 +1,15 @@
-package com.microservices.one.controllers;
+package com.microservices.one.models.controllers;
 
 import com.microservices.one.exception.BadRequestException;
 import com.microservices.one.exception.ResourceNotFoundException;
 import com.microservices.one.models.dto.ClientDto;
 import com.microservices.one.models.entities.ClientEntity;
+import com.microservices.one.models.mock.ClientMock;
 import com.microservices.one.models.payload.MessageResponse;
 import com.microservices.one.services.ClientService;
 import com.microservices.one.utils.Constants;
 import com.microservices.one.utils.MapperObjects;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 public class ClientController {
+
 
 
 
@@ -59,12 +60,13 @@ public class ClientController {
                 MessageResponse.builder()
                         .message("")
                         .object(ClientDto.builder()
+                                .id(cliente.getId())
                                 .firstName(cliente.getFirstName())
                                 .secondName(cliente.getSecondName())
                                 .secondFirstName(cliente.getSecondFirstName())
                                 .secondLastName(cliente.getSecondLastName())
                                 .documentType(cliente.getDocumentType())
-                                .numberDocument(Constants.DOCUMENT)
+                                .numberDocument(cliente.getNumberDocument())
                                 .numberPhone(cliente.getNumberPhone())
                                 .movil(cliente.getMovil())
                                 .email(cliente.getEmail())
@@ -77,10 +79,20 @@ public class ClientController {
              }
 
 
-    @RequestMapping(name="/document/{numberDocument}", method = RequestMethod.GET)
+    @GetMapping(path="/document/{numberDocument}")
     public ResponseEntity<?> getNumberDocument(@PathVariable String numberDocument) {
+        List<ClientDto> getList = clientService.listClient();
         ClientDto cliente = clientService.getNumberDocument(numberDocument);
 
+        if (Constants.DOCUMENT.equals(numberDocument)){
+            return new ResponseEntity<>(
+                    MessageResponse.builder()
+                    .message("")
+                    .object(ClientMock.getClientMock())
+                    .build(),
+                    HttpStatus.OK);
+
+        }
         if (cliente == null) {
             throw new ResourceNotFoundException("cliente", "número de documento: ", numberDocument);
         }
@@ -88,6 +100,7 @@ public class ClientController {
                 MessageResponse.builder()
                         .message("")
                         .object(ClientDto.builder()
+                                .id(cliente.getId())
                                 .firstName(cliente.getFirstName())
                                 .secondName(cliente.getSecondName())
                                 .secondFirstName(cliente.getSecondFirstName())
@@ -105,14 +118,16 @@ public class ClientController {
                 , HttpStatus.OK);
     }
 @PostMapping(path = "/create",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createClient(@RequestParam @Valid @NotNull ClientDto clientDto) {
+    public ResponseEntity<?> createClient(@RequestBody @Valid ClientDto client) {
 
-        ClientEntity clienteSave = null;
+
+    ClientDto clienteSave = null;
         try {
-            clienteSave = MapperObjects.clientDtoToproductEntity(clientService.addClient(clientDto));
+            clienteSave = clientService.addClient(client);
             return new ResponseEntity<>(MessageResponse.builder()
                     .message("Guardado correctamente")
                     .object(ClientDto.builder()
+                            .id(clienteSave.getId())
                             .firstName(clienteSave.getFirstName())
                             .secondName(clienteSave.getSecondName())
                             .secondFirstName(clienteSave.getSecondFirstName())
@@ -129,47 +144,47 @@ public class ClientController {
                     .build()
                     , HttpStatus.CREATED);
         } catch (DataAccessException exDt) {
-            throw  new BadRequestException(exDt.getMessage());
-        }
-    }
-
-
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateClient(@RequestBody @Valid ClientDto clientDto, @PathVariable Long id) throws Exception {
-        ClientDto clientUpdate = null;
-
-try {
-    if (clientService.existsById(id)) {
-        clientDto.setId(id);
-        clientUpdate = clientService.addClient(clientDto);
-        return new ResponseEntity<>(MessageResponse.builder()
-                .message("Actualizado correctamente")
-                .object(ClientDto.builder()
-                        .firstName(clientUpdate.getFirstName())
-                        .secondName(clientUpdate.getSecondName())
-                        .secondFirstName(clientUpdate.getSecondFirstName())
-                        .secondLastName(clientUpdate.getSecondLastName())
-                        .documentType(clientUpdate.getDocumentType())
-                        .numberDocument(clientUpdate.getNumberDocument())
-                        .numberPhone(clientUpdate.getNumberPhone())
-                        .movil(clientUpdate.getMovil())
-                        .email(clientUpdate.getEmail())
-                        .address(clientUpdate.getAddress())
-                        .city(clientUpdate.getCity())
-                        .status(clientUpdate.getStatus())
-                        .build())
-                .build(),
-                HttpStatus.CREATED);
-            } else {
-                throw new ResourceNotFoundException("CLiente", "id", id);
-            }
-        }
-            catch(DataAccessException exDt){
             throw new BadRequestException(exDt.getMessage());
         }
-    }
+}
 
+
+
+    @PutMapping(path = "/update/{numberDocument}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateClient(@RequestBody ClientDto clientDto, @PathVariable("numberDocument") String numberDocument) {
+        ClientDto clientUpdate = null;
+
+        try {
+
+            clientDto.setNumberDocument(numberDocument);
+            clientUpdate = clientService.addClient(clientDto);
+            System.out.println("Objeto de controller: " + clientDto);
+            System.out.println("Objeto de controller: " + clientUpdate);
+            return new ResponseEntity<>(MessageResponse.builder()
+                    .message("Actualizado correctamente")
+                    .object(ClientDto.builder()
+                            .id(clientUpdate.getId())
+                            .firstName(clientUpdate.getFirstName())
+                            .secondName(clientUpdate.getSecondName())
+                            .secondFirstName(clientUpdate.getSecondFirstName())
+                            .secondLastName(clientUpdate.getSecondLastName())
+                            .documentType(clientUpdate.getDocumentType())
+                            .numberDocument(clientUpdate.getNumberDocument())
+                            .numberPhone(clientUpdate.getNumberPhone())
+                            .movil(clientUpdate.getMovil())
+                            .email(clientUpdate.getEmail())
+                            .address(clientUpdate.getAddress())
+                            .city(clientUpdate.getCity())
+                            .status(clientUpdate.getStatus())
+                            .build())
+                    .build(),
+                    HttpStatus.CREATED);
+
+        } catch (DataAccessException exDt) {
+            throw new BadRequestException(exDt.getMessage());
+
+        }
+    }
     @DeleteMapping("delete/{id}")
     public  ResponseEntity<?> removeClient(@PathVariable Long id) throws Exception {
 
