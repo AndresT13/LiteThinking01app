@@ -1,10 +1,10 @@
-package com.microservices.one.utils;
+package com.microservices.one.utils.Mappers;
 
 
 import com.microservices.one.models.entities.ClientEntity;
 import com.microservices.one.models.dto.ClientDto;
 
-public interface MapperObjects {
+public interface MapperObjectsClients {
 
     public static ClientDto clientEntityToClientDto(ClientEntity clientEntity) {
         return ClientDto.builder()

@@ -1,14 +1,12 @@
 package com.microservices.one.services;
 
 import com.microservices.one.models.dto.ClientDto;
-import com.microservices.one.models.entities.ClientEntity;
-import com.microservices.one.utils.MapperObjects;
-import org.springframework.http.ResponseEntity;
+import com.microservices.one.utils.Mappers.MapperObjectsClients;
 
 import java.util.List;
 
 
-public interface ClientService extends MapperObjects {
+public interface IClientService extends MapperObjectsClients {
 
     List<ClientDto> listClient();
     ClientDto findById(Long id);

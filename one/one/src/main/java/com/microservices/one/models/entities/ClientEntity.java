@@ -5,11 +5,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.hibernate.annotations.LazyGroup;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -63,6 +67,19 @@ public class ClientEntity {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "UPDATE_DATE")
     private LocalDateTime updateDate;
+
+
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    private CountryEntity countries;
+
+    @OneToMany(mappedBy = "clients")
+    private List<BookingEntity> bookings;
+
+    @ManyToOne
+    @JoinColumn(name = "expense_id")
+    private ExpensesEntity expenses;
+
 
     public ClientEntity(Long id, String firstName, String secondName, String secondFirstName, String secondLastName, String documentType, String numberDocument, Integer numberPhone, Integer movil, String email, String address, String city) {
     }

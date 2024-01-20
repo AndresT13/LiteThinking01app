@@ -1,15 +1,14 @@
-package com.microservices.one.models.controllers;
+package com.microservices.one.controllers;
 
 import com.microservices.one.exception.BadRequestException;
 import com.microservices.one.exception.ResourceNotFoundException;
 import com.microservices.one.models.dto.ClientDto;
-import com.microservices.one.models.entities.ClientEntity;
 import com.microservices.one.models.mock.ClientMock;
 import com.microservices.one.models.payload.MessageResponse;
-import com.microservices.one.services.ClientService;
+import com.microservices.one.services.IClientService;
 import com.microservices.one.utils.Constants;
-import com.microservices.one.utils.MapperObjects;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +20,10 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class ClientController {
 
+    private final IClientService clientService;
 
-
-
-    private final ClientService clientService;
-
-    public ClientController(ClientService clientService) {
+    @Autowired
+    public ClientController(IClientService clientService) {
         this.clientService = clientService;
     }
 
@@ -120,7 +117,6 @@ public class ClientController {
 @PostMapping(path = "/create",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createClient(@RequestBody @Valid ClientDto client) {
 
-
     ClientDto clienteSave = null;
         try {
             clienteSave = clientService.addClient(client);
@@ -149,7 +145,6 @@ public class ClientController {
 }
 
 
-
     @PutMapping(path = "/update/{numberDocument}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateClient(@RequestBody ClientDto clientDto, @PathVariable("numberDocument") String numberDocument) {
         ClientDto clientUpdate = null;
@@ -158,8 +153,6 @@ public class ClientController {
 
             clientDto.setNumberDocument(numberDocument);
             clientUpdate = clientService.addClient(clientDto);
-            System.out.println("Objeto de controller: " + clientDto);
-            System.out.println("Objeto de controller: " + clientUpdate);
             return new ResponseEntity<>(MessageResponse.builder()
                     .message("Actualizado correctamente")
                     .object(ClientDto.builder()

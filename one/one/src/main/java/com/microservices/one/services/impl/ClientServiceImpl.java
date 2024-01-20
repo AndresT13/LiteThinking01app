@@ -3,38 +3,34 @@ package com.microservices.one.services.impl;
 import com.microservices.one.exception.BadRequestException;
 import com.microservices.one.models.dto.ClientDto;
 import com.microservices.one.models.entities.ClientEntity;
-import com.microservices.one.repositories.Dao.ClientDao;
-import com.microservices.one.services.ClientService;
-import com.microservices.one.utils.Constants;
-import com.microservices.one.utils.MapperObjects;
+import com.microservices.one.repositories.ClientDao;
+import com.microservices.one.services.IClientService;
+import com.microservices.one.utils.Mappers.MapperObjectsClients;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 
 @Service
 @RequiredArgsConstructor
-public class ClientServiceImpl implements ClientService {
+public class ClientServiceImpl implements IClientService {
     @Autowired
     private ClientDao clientRepository;
 
 
     @Override
     public List<ClientDto> listClient() {
-        List<ClientEntity> productEntityList = clientRepository.findAll();
+        List<ClientEntity> clienttEntityList = clientRepository.findAll();
         List<ClientDto> clientDtoList = new ArrayList<>();
 
-        for (ClientEntity entity : productEntityList) {
-            clientDtoList.add(MapperObjects.clientEntityToClientDto(entity));
+        for (ClientEntity entity : clienttEntityList) {
+            clientDtoList.add(MapperObjectsClients.clientEntityToClientDto(entity));
         }
         return clientDtoList;
     }
@@ -48,7 +44,7 @@ public class ClientServiceImpl implements ClientService {
         ClientDto clientDto = null;
 
         if (entity.isPresent())
-           clientDto = MapperObjects.clientEntityToClientDto(entity.get());
+           clientDto = MapperObjectsClients.clientEntityToClientDto(entity.get());
 
         return clientDto;
     }
@@ -63,7 +59,7 @@ public class ClientServiceImpl implements ClientService {
         ClientDto clientDto = null;
 
         if (clientEntity.isPresent())
-            clientDto = MapperObjects.clientEntityToClientDto(clientEntity.get());
+            clientDto = MapperObjectsClients.clientEntityToClientDto(clientEntity.get());
         return clientDto;
 
     }
@@ -74,10 +70,10 @@ public class ClientServiceImpl implements ClientService {
         Optional<ClientEntity> entity = clientRepository.findById(clientDto.getId());
         ClientEntity client = null;
         if (!entity.isPresent()) {
-            client = clientRepository.save(MapperObjects.clientDtoToClientEntity(clientDto));
+            client = clientRepository.save(MapperObjectsClients.clientDtoToClientEntity(clientDto));
         }
 
-        return MapperObjects.clientEntityToClientDto(client);
+        return MapperObjectsClients.clientEntityToClientDto(client);
     }
 
    /* @Override

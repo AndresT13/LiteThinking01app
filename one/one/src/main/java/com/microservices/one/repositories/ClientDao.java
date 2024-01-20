@@ -1,4 +1,4 @@
-package com.microservices.one.repositories.Dao;
+package com.microservices.one.repositories;
 
 import ch.qos.logback.core.net.server.Client;
 import com.microservices.one.models.dto.ClientDto;
