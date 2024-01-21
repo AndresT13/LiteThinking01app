@@ -3,7 +3,7 @@ package com.microservices.one.services.impl;
 import com.microservices.one.exception.BadRequestException;
 import com.microservices.one.models.dto.ClientDto;
 import com.microservices.one.models.entities.ClientEntity;
-import com.microservices.one.repositories.ClientDao;
+import com.microservices.one.repositories.dao.ClientDao;
 import com.microservices.one.services.IClientService;
 import com.microservices.one.utils.Mappers.MapperObjectsClients;
 
